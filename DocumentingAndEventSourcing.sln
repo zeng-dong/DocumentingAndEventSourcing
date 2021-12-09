@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Marten", "Marten", "{46618A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirstApi", "src\Marten\FirstApi\FirstApi.csproj", "{7C016DA2-112E-4664-B4B7-99789D8AF329}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirstApiOnEmbeddedPostgres", "src\Marten\FirstApiOnEmbeddedPostgres\FirstApiOnEmbeddedPostgres.csproj", "{6A84D564-4C53-4C0D-94B3-D41500395F11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +19,17 @@ Global
 		{7C016DA2-112E-4664-B4B7-99789D8AF329}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C016DA2-112E-4664-B4B7-99789D8AF329}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C016DA2-112E-4664-B4B7-99789D8AF329}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A84D564-4C53-4C0D-94B3-D41500395F11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A84D564-4C53-4C0D-94B3-D41500395F11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A84D564-4C53-4C0D-94B3-D41500395F11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A84D564-4C53-4C0D-94B3-D41500395F11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7C016DA2-112E-4664-B4B7-99789D8AF329} = {46618A59-2B4C-4A2D-9107-0D7E335D13B0}
+		{6A84D564-4C53-4C0D-94B3-D41500395F11} = {46618A59-2B4C-4A2D-9107-0D7E335D13B0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B012EF55-1A8D-437F-93ED-37D58E9C23E6}
