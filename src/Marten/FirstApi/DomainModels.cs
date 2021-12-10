@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FirstApi
 {
@@ -21,6 +22,8 @@ namespace FirstApi
 
         public string Description { get; set; }
         public Guid? AssignedUser { get; set; }
+
+        public List<IssueTask> Tasks { get; set; }
     }
 
     public class User

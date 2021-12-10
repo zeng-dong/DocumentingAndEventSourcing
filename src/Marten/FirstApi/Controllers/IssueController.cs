@@ -36,7 +36,12 @@ namespace FirstApi.Controllers
             var issue = new Issue
             {
                 Title = command.Title,
-                Description = command.Description
+                Description = command.Description,
+                Tasks = new List<IssueTask>
+                {
+                    new IssueTask { Assigned = DateTimeOffset.UtcNow.AddMinutes(60), Completed = true, Title = "Need your attention"},
+                    new IssueTask { Assigned = DateTimeOffset.UtcNow.AddMinutes(180), Completed = true, Title = "Need your attention again"},
+                }
             };
 
             // Register the new Issue entity
