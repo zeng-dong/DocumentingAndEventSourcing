@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Weasel.Postgresql;
 
 namespace FirstApi
 {
@@ -25,11 +26,25 @@ namespace FirstApi
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services, IHostEnvironment environment)
         {
             var connectionString = Configuration.GetConnectionString("Marten");
 
-            services.AddMarten(connectionString);
+            //services.AddMarten(connectionString);
+
+            services.AddMarten(options =>
+            {
+                options.Connection(connectionString);
+
+                //options.Schema.For<Issue>().Index();
+
+                // If we're running in development mode, let Marten just take care
+                // of all necessary schema building and patching behind the scenes
+                if (environment.IsDevelopment())
+                {
+                    options.AutoCreateSchemaObjects = AutoCreate.All;
+                }
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
