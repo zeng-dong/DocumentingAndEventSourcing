@@ -12,7 +12,7 @@ namespace FirstConsoleBanking
         {
             var store = DocumentStore.For(_ =>
             {
-                _.Connection("host=localhost;database=marten_test;password=postgres;username=postgres");
+                _.Connection("host=localhost;database=Sales;password=tester;username=tester");
 
                 _.AutoCreateSchemaObjects = AutoCreate.All;
 
@@ -22,7 +22,7 @@ namespace FirstConsoleBanking
                     typeof(AccountDebited)
                 });
 
-                _.Events.InlineProjections.AggregateStreamsWith<Account>();
+                //_.Events.InlineProjections.AggregateStreamsWith<Account>();
             });
 
             var khalid = new AccountCreated
