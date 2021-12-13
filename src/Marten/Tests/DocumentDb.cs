@@ -34,6 +34,7 @@ namespace Tests
         [Fact]
         public void clean_it_off()
         {
+            _theStore.Advanced.Clean.CompletelyRemoveAll();
         }
 
         [Fact]
