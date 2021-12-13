@@ -20,10 +20,9 @@ namespace FirstConsoleBanking
                 opts.Projections.SelfAggregate<Account>(ProjectionLifecycle.Inline); //Configure inline projection
             });
 
-            // Establish Accounts
-            var kroger = new AccountCreated
+            var programmer = new AccountCreated
             {
-                Owner = "Super Kroger",
+                Owner = "Decent Programmer",
                 AccountId = Guid.NewGuid(),
                 StartingBalance = 1000m
             };
@@ -38,22 +37,22 @@ namespace FirstConsoleBanking
             using (var session = store.OpenSession())
             {
                 // create banking accounts
-                session.Events.StartStream(kroger.AccountId, kroger);
+                session.Events.StartStream(programmer.AccountId, programmer);
                 session.Events.StartStream(bill.AccountId, bill);
 
                 session.SaveChanges();
             }
 
-            // First Transaction
+            // First Transaction: pay Bill because he helped
             using (var session = store.OpenSession())
             {
-                var account = session.Load<Account>(kroger.AccountId);
+                var account = session.Load<Account>(programmer.AccountId);
                 var amount = 100m;
                 var give = new AccountDebited
                 {
                     Amount = amount,
                     To = bill.AccountId,
-                    From = kroger.AccountId,
+                    From = programmer.AccountId,
                     Description = "Bill helped me out with some code."
                 };
 
@@ -66,7 +65,7 @@ namespace FirstConsoleBanking
                 session.SaveChanges();
             }
 
-            // Second Transaction
+            // Second Transaction: Bill try to over spend
             using (var session = store.OpenSession())
             {
                 // load bill's account
@@ -76,7 +75,7 @@ namespace FirstConsoleBanking
                 {
                     Amount = amount,
                     From = bill.AccountId,
-                    To = kroger.AccountId,
+                    To = programmer.AccountId,
                     Description = "Trying to buy that Ferrari"
                 };
 
@@ -104,7 +103,7 @@ namespace FirstConsoleBanking
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine("----- Final Balance ------");
 
-                var accounts = session.LoadMany<Account>(kroger.AccountId, bill.AccountId);
+                var accounts = session.LoadMany<Account>(programmer.AccountId, bill.AccountId);
 
                 foreach (var account in accounts)
                 {
@@ -115,7 +114,7 @@ namespace FirstConsoleBanking
             // List the account activity
             using (var session = store.LightweightSession())
             {
-                foreach (var account in new[] { kroger, bill })
+                foreach (var account in new[] { programmer, bill })
                 {
                     Console.WriteLine();
                     Console.WriteLine($"Transaction ledger for {account.Owner}");
