@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Weasel.Postgresql;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,9 +19,16 @@ namespace Tests
         {
             _output = output;
 
-            _theStore = DocumentStore.For(ConnectionSource.ConnectionString);
+            //_theStore = DocumentStore.For(ConnectionSource.ConnectionString);
+            _theStore = DocumentStore.For(x =>
+            {
+                x.Connection(ConnectionSource.ConnectionString);
 
-            _theStore.Advanced.Clean.CompletelyRemoveAll();
+                // in prouction : x.AutoCreateSchemaObjects = AutoCreate.None;
+                x.AutoCreateSchemaObjects = AutoCreate.CreateOrUpdate;
+            });
+
+            //_theStore.Advanced.Clean.CompletelyRemoveAll();
         }
 
         [Fact]
@@ -39,6 +47,12 @@ namespace Tests
                 {
                     new OrderDetail { PartNumber = "Abc101", Number = 5 },
                     new OrderDetail { PartNumber = "Apple", Number = 15 }
+                },
+                Address = new Address
+                {
+                    City = "Houston",
+                    Country = "US",
+                    StateOrProvince = "TX"
                 }
             };
 

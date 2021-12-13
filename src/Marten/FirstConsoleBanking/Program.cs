@@ -1,6 +1,7 @@
 ﻿using FirstConsoleBanking.Events;
 using FirstConsoleBanking.Projections;
 using Marten;
+using Marten.Events.Projections;
 using System;
 using Weasel.Postgresql;
 
@@ -10,54 +11,49 @@ namespace FirstConsoleBanking
     {
         private static void Main(string[] args)
         {
-            var store = DocumentStore.For(_ =>
+            var store = DocumentStore.For(opts =>
             {
-                _.Connection("host=localhost;database=Sales;password=tester;username=tester");
+                opts.Connection("host=localhost;database=TestingMarten;password=tester;username=tester");
 
-                _.AutoCreateSchemaObjects = AutoCreate.All;
+                opts.AutoCreateSchemaObjects = AutoCreate.All; //.All will wipe out the schema each time this is run
 
-                _.Events.AddEventTypes(new[] {
-                    typeof(AccountCreated),
-                    typeof(AccountCredited),
-                    typeof(AccountDebited)
-                });
-
-                //_.Events.InlineProjections.AggregateStreamsWith<Account>();
+                opts.Projections.SelfAggregate<Account>(ProjectionLifecycle.Inline); //Configure inline projection
             });
 
-            var khalid = new AccountCreated
+            // Establish Accounts
+            var kroger = new AccountCreated
             {
-                Owner = "Khalid Abuhakmeh",
+                Owner = "Super Kroger",
                 AccountId = Guid.NewGuid(),
                 StartingBalance = 1000m
             };
 
             var bill = new AccountCreated
             {
-                Owner = "Bill Boga",
+                Owner = "Bill Gates",
                 AccountId = Guid.NewGuid()
             };
 
+            // Create Accounts
             using (var session = store.OpenSession())
             {
                 // create banking accounts
-                session.Events.Append(khalid.AccountId, khalid);
-                session.Events.Append(bill.AccountId, bill);
+                session.Events.StartStream(kroger.AccountId, kroger);
+                session.Events.StartStream(bill.AccountId, bill);
 
                 session.SaveChanges();
             }
 
+            // First Transaction
             using (var session = store.OpenSession())
             {
-                // load khalid's account
-                var account = session.Load<Account>(khalid.AccountId);
-                // let's be generous
+                var account = session.Load<Account>(kroger.AccountId);
                 var amount = 100m;
                 var give = new AccountDebited
                 {
                     Amount = amount,
                     To = bill.AccountId,
-                    From = khalid.AccountId,
+                    From = kroger.AccountId,
                     Description = "Bill helped me out with some code."
                 };
 
@@ -70,17 +66,17 @@ namespace FirstConsoleBanking
                 session.SaveChanges();
             }
 
+            // Second Transaction
             using (var session = store.OpenSession())
             {
                 // load bill's account
                 var account = session.Load<Account>(bill.AccountId);
-                // let's try to over spend
                 var amount = 1000m;
                 var spend = new AccountDebited
                 {
                     Amount = amount,
                     From = bill.AccountId,
-                    To = khalid.AccountId,
+                    To = kroger.AccountId,
                     Description = "Trying to buy that Ferrari"
                 };
 
@@ -101,13 +97,14 @@ namespace FirstConsoleBanking
                 session.SaveChanges();
             }
 
+            // Query the Account Balance from Projection
             using (var session = store.LightweightSession())
             {
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine("----- Final Balance ------");
 
-                var accounts = session.LoadMany<Account>(khalid.AccountId, bill.AccountId);
+                var accounts = session.LoadMany<Account>(kroger.AccountId, bill.AccountId);
 
                 foreach (var account in accounts)
                 {
@@ -115,9 +112,10 @@ namespace FirstConsoleBanking
                 }
             }
 
+            // List the account activity
             using (var session = store.LightweightSession())
             {
-                foreach (var account in new[] { khalid, bill })
+                foreach (var account in new[] { kroger, bill })
                 {
                     Console.WriteLine();
                     Console.WriteLine($"Transaction ledger for {account.Owner}");

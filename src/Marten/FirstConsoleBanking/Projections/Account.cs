@@ -30,7 +30,7 @@ namespace FirstConsoleBanking.Projections
             if (!result)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"{Owner} has insufficient funds for debit");
+                Console.WriteLine($"{Owner} has insufficient funds for debit ({debit.Amount.ToString("C")}): {debit.Description}");
             }
             return result;
         }
